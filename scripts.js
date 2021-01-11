@@ -8,6 +8,23 @@ let daysLeftDisplay = document.querySelector('#daysLeftDisplay');
 let bookFrequencyDisplay = document.querySelector('#bookFrequencyDisplay');
 let frequencyDisplayText = document.querySelector('#frequencyDisplayText');
 
+const writeToLocalStorage = (val) => {
+  if (Storage !== undefined){
+    localStorage.setItem("goal", val);
+  }
+}
+
+const getFromLocalStorage = () => {
+  if (Storage !== undefined){
+    const storedGoal = localStorage.getItem("goal");
+    if (storedGoal != null){
+      return storedGoal;
+    }else{
+      return "";
+    }
+  }
+  return "";
+}
 
 const resetFrequencyDisplayTextParagraph = () => {
     frequencyDisplayText.innerHTML = "";
@@ -21,6 +38,9 @@ const resetFrequencyDisplayTextParagraph = () => {
     bookFrequencyDisplay = document.querySelector('#bookFrequencyDisplay');
 }
 
+function updateGoalDate(){
+  booksGoal.value = getFromLocalStorage();
+}
 
 function updateDaysLeft() {
   daysLeftDisplay.innerText = daysLeft;
@@ -28,6 +48,9 @@ function updateDaysLeft() {
 
 function bookFrequencyCalculate() {
   let booksRemaining = parseInt(booksGoal.value - booksRead.value);
+  if (booksGoal.value > 0){
+    writeToLocalStorage(booksGoal.value);
+  }
   if (booksRemaining > 0){
     resetFrequencyDisplayTextParagraph();
     let bookFrequencyNum = daysLeft / booksRemaining;
@@ -40,6 +63,7 @@ function bookFrequencyCalculate() {
   }
 }
 
+updateGoalDate();
 updateDaysLeft();
 bookFrequencyCalculate();
 
