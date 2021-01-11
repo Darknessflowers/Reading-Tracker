@@ -8,26 +8,35 @@ let daysLeftDisplay = document.querySelector('#daysLeftDisplay');
 let bookFrequencyDisplay = document.querySelector('#bookFrequencyDisplay');
 let frequencyDisplayText = document.querySelector('#frequencyDisplayText');
 
+
 const resetFrequencyDisplayTextParagraph = () => {
-    frequencyDisplayText.innerHTML = "You need to finish a book every "+
-      "<span id='bookFrequencyDisplay'></span> days.";
-      bookFrequencyDisplay = document.querySelector('#bookFrequencyDisplay');
+    frequencyDisplayText.innerHTML = "";
+    const spanElement = document.createElement("span");
+    spanElement.setAttribute('id', 'bookFrequencyDisplay');
+    const youNeedToFinishTextNode = document.createTextNode("You need to finish a book every ");
+    const daysTextNode = document.createTextNode(" days");
+    frequencyDisplayText.appendChild(youNeedToFinishTextNode);
+    frequencyDisplayText.appendChild(spanElement);
+    frequencyDisplayText.appendChild(daysTextNode);
+    bookFrequencyDisplay = document.querySelector('#bookFrequencyDisplay');
 }
 
-console.log(currentDate);
 
 function updateDaysLeft() {
   daysLeftDisplay.innerText = daysLeft;
 }
+
 function bookFrequencyCalculate() {
   let booksRemaining = parseInt(booksGoal.value - booksRead.value);
   if (booksRemaining > 0){
     resetFrequencyDisplayTextParagraph();
     let bookFrequencyNum = daysLeft / booksRemaining;
     bookFrequencyDisplay.innerText = Math.floor(bookFrequencyNum);
+  }else if (booksGoal.value != 0 && booksRead.value != 0){
     console.log(booksRemaining)
-  }else{
     frequencyDisplayText.innerText = "You have completed the goal!";
+  }else{
+    frequencyDisplayText.innerText = "";
   }
 }
 
