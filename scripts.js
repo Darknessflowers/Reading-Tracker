@@ -2,44 +2,42 @@ let booksRead = document.querySelector('#booksRead');
 let booksGoal = document.querySelector('#booksGoal');
 let currentDate = Date.now();
 let endOfChallenge = new Date('December 31, 2021 23:59:59').getTime();
-let oneDay = 1000*60*60*24;
-let daysLeft = Math.round((endOfChallenge - currentDate)/oneDay);
+let oneDay = 1000 * 60 * 60 * 24;
+let daysLeft = Math.round((endOfChallenge - currentDate) / oneDay);
 let daysLeftDisplay = document.querySelector('#daysLeftDisplay');
-let bookFrequencyDisplay = document.querySelector('#bookFrequencyDisplay');
 let frequencyDisplayText = document.querySelector('#frequencyDisplayText');
 
 const writeToLocalStorage = (goal, read) => {
-  if (Storage !== undefined){
+  if (Storage !== undefined) {
     localStorage.setItem("goal", goal);
     localStorage.setItem("read", read);
   }
 }
 
 const getFromLocalStorage = (key) => {
-  if (Storage !== undefined){
+  if (Storage !== undefined) {
     const storedVal = localStorage.getItem(key);
-    if (storedVal != null){
+    if (storedVal !== null) {
       return storedVal;
-    }else{
-      return "";
     }
   }
   return "";
 }
 
-const resetFrequencyDisplayTextParagraph = () => {
-    frequencyDisplayText.innerHTML = "";
-    const spanElement = document.createElement("span");
-    spanElement.setAttribute('id', 'bookFrequencyDisplay');
-    const youNeedToFinishTextNode = document.createTextNode("You need to finish a book every ");
-    const daysTextNode = document.createTextNode(" days");
-    frequencyDisplayText.appendChild(youNeedToFinishTextNode);
-    frequencyDisplayText.appendChild(spanElement);
-    frequencyDisplayText.appendChild(daysTextNode);
-    bookFrequencyDisplay = document.querySelector('#bookFrequencyDisplay');
+const updateFrequencyDisplayText = (bookFrequencyNum) => {
+  //display message is empty by default
+  let message = "";
+  if (bookFrequencyNum > 0) {
+    //still have books left to read
+    message = `You need to finish a book every ${bookFrequencyNum} days`;
+  } else if (bookFrequencyNum === 0) {
+    //no books left to read
+    message = "You have completed the goal!";
+  }
+  frequencyDisplayText.innerText = message;
 }
 
-function updateValuesFromLocalStorage(){
+function updateValuesFromLocalStorage() {
   booksGoal.value = getFromLocalStorage("goal");
   booksRead.value = getFromLocalStorage("read");
 }
@@ -49,20 +47,26 @@ function updateDaysLeft() {
 }
 
 function bookFrequencyCalculate() {
-  let booksRemaining = parseInt(booksGoal.value - booksRead.value);
-  if (booksGoal.value > 0){
+  //-1 is an arbitray num. Passing a negative value to updateFrequencyDisplayText will make it display an empty string
+  let bookFrequencyNum = -1;
+
+  //parseInt replace erroneous values with empty string and decimals with int.
+  booksRead.value = Number.parseInt(booksRead.value)
+  booksGoal.value = Number.parseInt(booksGoal.value)
+
+  //validate now => only books goal and read >= 0 are valid
+  if (booksGoal.valueAsNumber >= 0 && booksRead.valueAsNumber >= 0) {
+    //save valid nums to storage
     writeToLocalStorage(booksGoal.value, booksRead.value);
+    //get num of books left to read
+    let booksRemaining = parseInt(booksGoal.value) - parseInt(booksRead.value);
+    if (booksRemaining > 0) {
+      bookFrequencyNum = Math.floor(daysLeft / booksRemaining);
+    } else {
+      bookFrequencyNum = 0;
+    }
   }
-  if (booksRemaining > 0){
-    resetFrequencyDisplayTextParagraph();
-    let bookFrequencyNum = daysLeft / booksRemaining;
-    bookFrequencyDisplay.innerText = Math.floor(bookFrequencyNum);
-  }else if (booksGoal.value != 0 && booksRead.value != 0){
-    console.log(booksRemaining)
-    frequencyDisplayText.innerText = "You have completed the goal!";
-  }else{
-    frequencyDisplayText.innerText = "";
-  }
+  updateFrequencyDisplayText(bookFrequencyNum);
 }
 
 updateValuesFromLocalStorage();
