@@ -8,17 +8,18 @@ let daysLeftDisplay = document.querySelector('#daysLeftDisplay');
 let bookFrequencyDisplay = document.querySelector('#bookFrequencyDisplay');
 let frequencyDisplayText = document.querySelector('#frequencyDisplayText');
 
-const writeToLocalStorage = (val) => {
+const writeToLocalStorage = (goal, read) => {
   if (Storage !== undefined){
-    localStorage.setItem("goal", val);
+    localStorage.setItem("goal", goal);
+    localStorage.setItem("read", read);
   }
 }
 
-const getFromLocalStorage = () => {
+const getFromLocalStorage = (key) => {
   if (Storage !== undefined){
-    const storedGoal = localStorage.getItem("goal");
-    if (storedGoal != null){
-      return storedGoal;
+    const storedVal = localStorage.getItem(key);
+    if (storedVal != null){
+      return storedVal;
     }else{
       return "";
     }
@@ -38,8 +39,9 @@ const resetFrequencyDisplayTextParagraph = () => {
     bookFrequencyDisplay = document.querySelector('#bookFrequencyDisplay');
 }
 
-function updateGoalDate(){
-  booksGoal.value = getFromLocalStorage();
+function updateValuesFromLocalStorage(){
+  booksGoal.value = getFromLocalStorage("goal");
+  booksRead.value = getFromLocalStorage("read");
 }
 
 function updateDaysLeft() {
@@ -49,7 +51,7 @@ function updateDaysLeft() {
 function bookFrequencyCalculate() {
   let booksRemaining = parseInt(booksGoal.value - booksRead.value);
   if (booksGoal.value > 0){
-    writeToLocalStorage(booksGoal.value);
+    writeToLocalStorage(booksGoal.value, booksRead.value);
   }
   if (booksRemaining > 0){
     resetFrequencyDisplayTextParagraph();
@@ -63,7 +65,7 @@ function bookFrequencyCalculate() {
   }
 }
 
-updateGoalDate();
+updateValuesFromLocalStorage();
 updateDaysLeft();
 bookFrequencyCalculate();
 
